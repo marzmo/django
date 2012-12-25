@@ -68,7 +68,7 @@ Python compatibility
 ====================
 
 Django 1.5 requires Python 2.6.5 or above, though we **highly recommended**
-Python 2.7.3 or above. Support for Python 2.5 and below as been dropped.
+Python 2.7.3 or above. Support for Python 2.5 and below has been dropped.
 
 This change should affect only a small number of Django users, as most
 operating-system vendors today are shipping Python 2.6 or newer as their default
@@ -88,7 +88,7 @@ Python 3 support
 Django 1.5 introduces support for Python 3 - specifically, Python
 3.2 and above. This comes in the form of a **single** codebase; you don't
 need to install a different version of Django on Python 3. This means that
-you can write application targeted for just Python 2, just Python 3, or single
+you can write applications targeted for just Python 2, just Python 3, or single
 applications that support both platforms.
 
 However, we're labeling this support "experimental" for now: although it's
@@ -219,6 +219,15 @@ GeoDjango
 * Support for PostGIS 2.0 has been added and support for GDAL < 1.5 has been
   dropped.
 
+New tutorials
+~~~~~~~~~~~~~
+
+Additions to the docs include a revamped :doc:`Tutorial 3</intro/tutorial03>`
+and a new :doc:`tutorial on testing</intro/tutorial05>`. A new section,
+"Advanced Tutorials", offers :doc:`How to write reusable apps
+</intro/reusable-apps>` as well as a step-by-step guide for new contributors in
+:doc:`Writing your first patch for Django </intro/contributing>`.
+
 Minor features
 ~~~~~~~~~~~~~~
 
@@ -318,6 +327,9 @@ Django 1.5 also includes several smaller improvements worth noting:
   :func:`django.contrib.messages.add_message`. This is useful for generating
   error messages from admin actions.
 
+* The admin's list filters can now be customized per-request thanks to the new
+  :meth:`django.contrib.admin.ModelAdmin.get_list_filter` method.
+
 Backwards incompatible changes in 1.5
 =====================================
 
@@ -328,6 +340,21 @@ Backwards incompatible changes in 1.5
     have been removed. If you haven't updated your code within the
     deprecation timeline for a given feature, its removal may appear as a
     backwards incompatible change.
+
+Managers on abstract models
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Abstract models are able to define a custom manager, and that manager
+:ref:`will be inherited by any concrete models extending the abstract model
+<custom-managers-and-inheritance>`. However, if you try to use the abstract
+model to call a method on the manager, an exception will now be raised.
+Previously, the call would have been permitted, but would have failed as soon
+as any database operation was attempted (usually with a "table does not exist"
+error from the database).
+
+If you have functionality on a manager that you have been invoking using
+the abstract class, you should migrate that logic to a Python
+``staticmethod`` or ``classmethod`` on the abstract class.
 
 Context in year archive class-based views
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -588,6 +615,12 @@ Miscellaneous
   ``.bitor()`` instead. The removal of ``&`` and ``|`` was done to be consistent with
   :ref:`Q() expressions <complex-lookups-with-q>` and ``QuerySet`` combining where
   the operators are used as boolean AND and OR operators.
+
+* In a ``filter()`` call, when :ref:`F() expressions <query-expressions>`
+  contained lookups spanning multi-valued relations, they didn't always reuse
+  the same relations as other lookups along the same chain. This was changed,
+  and now F() expressions will always use the same relations as other lookups
+  within the same ``filter()`` call.
 
 * The :ttag:`csrf_token` template tag is no longer enclosed in a div. If you need
   HTML validation against pre-HTML5 Strict DTDs, you should add a div around it
