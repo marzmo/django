@@ -22,6 +22,7 @@ from django.utils.module_loading import module_has_submodule
 from django.utils.regex_helper import normalize
 from django.utils import six
 from django.utils.translation import get_language
+from django.utils.module_loading import module_has_submodule
 
 
 _resolver_cache = {} # Maps URLconf modules to RegexURLResolver instances.
